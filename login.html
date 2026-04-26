@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登入 · BlackBook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a14; --bg-2:#11111d; --surface:#181828; --surface-2:#22223a;
+  --border:rgba(255,255,255,.08); --text:#f0f0ff; --text-muted:#9090b0; --text-faint:#5a5a7a;
+  --primary:#3b82f6; --primary-hover:#2563eb; --primary-glow:rgba(59,130,246,.4);
+  --accent:#8b5cf6;
+  --success:#22c55e; --danger:#ef4444;
+  --space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;--space-5:1.25rem;
+  --space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;
+  --radius-md:.5rem;--radius-lg:.75rem;--radius-xl:1rem;--radius-2xl:1.5rem;--radius-full:9999px;
+  --transition:200ms cubic-bezier(0.16,1,0.3,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100vh;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;padding:var(--space-4);position:relative;overflow-x:hidden;}
+button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;}
+input,textarea{font:inherit;}
+
+/* Background orbs */
+.orb{position:fixed;border-radius:50%;filter:blur(100px);opacity:.3;pointer-events:none;z-index:0;}
+.orb-1{width:400px;height:400px;background:var(--primary);top:-100px;left:-100px;}
+.orb-2{width:300px;height:300px;background:var(--accent);bottom:-50px;right:-50px;}
+
+.back-link{position:fixed;top:var(--space-5);left:var(--space-5);display:flex;align-items:center;gap:6px;color:var(--text-muted);font-size:.85rem;font-weight:700;z-index:10;transition:color var(--transition);}
+.back-link:hover{color:var(--text);}
+.back-link svg{transition:transform var(--transition);}
+.back-link:hover svg{transform:translateX(-3px);}
+
+.auth-container{position:relative;z-index:1;width:100%;max-width:420px;}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-2xl);padding:var(--space-8);box-shadow:0 20px 60px rgba(0,0,0,.4);}
+.auth-brand{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);margin-bottom:var(--space-6);}
+.auth-logo{width:60px;height:60px;border-radius:var(--radius-xl);}
+.auth-name{font-size:1.5rem;font-weight:900;letter-spacing:.02em;}
+.auth-sub{font-size:.7rem;font-weight:700;color:var(--primary);letter-spacing:.2em;text-transform:uppercase;}
+
+.auth-title{font-size:1.5rem;font-weight:900;text-align:center;margin-bottom:var(--space-2);}
+.auth-desc{text-align:center;color:var(--text-muted);font-size:.9rem;margin-bottom:var(--space-6);}
+
+.field{margin-bottom:var(--space-4);}
+.field-label{display:block;font-size:.8rem;font-weight:800;color:var(--text-muted);margin-bottom:6px;letter-spacing:.02em;}
+.field-input{width:100%;padding:var(--space-3) var(--space-4);background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-lg);color:var(--text);font-size:.95rem;outline:none;transition:all var(--transition);}
+.field-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,.15);}
+.field-input::placeholder{color:var(--text-faint);}
+
+.btn{width:100%;display:flex;align-items:center;justify-content:center;gap:var(--space-2);padding:var(--space-3) var(--space-5);border-radius:var(--radius-full);font-weight:800;font-size:.95rem;transition:all var(--transition);}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover:not(:disabled){background:var(--primary-hover);box-shadow:0 6px 20px var(--primary-glow);}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed;}
+.btn-google{background:#fff;color:#1a1a2e;border:1px solid var(--border);}
+.btn-google:hover{background:#f5f5f5;}
+.btn-ghost{background:var(--surface-2);color:var(--text);}
+.btn-ghost:hover{background:var(--bg-2);}
+
+.divider{display:flex;align-items:center;gap:var(--space-3);margin:var(--space-5) 0;color:var(--text-faint);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+.auth-footer{text-align:center;margin-top:var(--space-5);font-size:.85rem;color:var(--text-muted);}
+.auth-footer a{color:var(--primary);font-weight:700;cursor:pointer;}
+
+.security-badge{display:flex;align-items:center;justify-content:center;gap:6px;font-size:.7rem;color:var(--text-faint);margin-top:var(--space-5);font-weight:700;letter-spacing:.05em;}
+
+.error-msg{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--danger);padding:var(--space-3);border-radius:var(--radius-lg);font-size:.85rem;margin-bottom:var(--space-4);display:none;}
+.error-msg.show{display:block;}
+.success-msg{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--success);padding:var(--space-3);border-radius:var(--radius-lg);font-size:.85rem;margin-bottom:var(--space-4);display:none;}
+.success-msg.show{display:block;}
+
+/* ── Setup screen (avatar+name) ── */
+.avatar-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:var(--space-2);margin-bottom:var(--space-3);}
+.avatar-opt{aspect-ratio:1;background:var(--bg-2);border:2px solid var(--border);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;font-size:1.4rem;cursor:pointer;transition:all var(--transition);}
+.avatar-opt:hover{border-color:var(--primary);}
+.avatar-opt.selected{border-color:var(--primary);background:rgba(59,130,246,.15);box-shadow:0 0 0 2px var(--primary-glow);transform:scale(1.05);}
+.avatar-current{display:flex;justify-content:center;margin-bottom:var(--space-4);}
+.avatar-preview{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:2.5rem;box-shadow:0 4px 16px var(--primary-glow);position:relative;overflow:hidden;}
+.avatar-preview img{width:100%;height:100%;object-fit:cover;}
+.upload-row{display:flex;gap:var(--space-2);margin-top:var(--space-2);}
+.upload-btn{flex:1;padding:var(--space-2) var(--space-3);background:var(--bg-2);border:1px dashed var(--border);border-radius:var(--radius-lg);font-size:.8rem;color:var(--text-muted);cursor:pointer;transition:all var(--transition);}
+.upload-btn:hover{border-color:var(--primary);color:var(--text);}
+#fileInput{display:none;}
+
+/* loader */
+.loader{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* hide screen */
+.screen{display:none;}
+.screen.active{display:block;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<a href="index.html" class="back-link">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+  返回
+</a>
+
+<div class="auth-container">
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- LOGIN SCREEN -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="screen active" id="screen-login">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <svg class="auth-logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="loginBg" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#1a1a2e"/><stop offset="100%" stop-color="#000"/></radialGradient>
+            <linearGradient id="loginB" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#e0e8ff"/></linearGradient>
+          </defs>
+          <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#loginBg)"/>
+          <ellipse cx="32" cy="32" rx="26" ry="10" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+          <circle cx="32" cy="32" r="22" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+          <text x="32" y="44" font-family="Nunito,sans-serif" font-size="34" font-weight="900" fill="url(#loginB)" text-anchor="middle">B</text>
+          <circle cx="56" cy="32" r="3" fill="#3b82f6"/>
+          <circle cx="38" cy="44" r="2.5" fill="#3b82f6"/>
+        </svg>
+        <div>
+          <div class="auth-name">BlackBook</div>
+          <div class="auth-sub" style="text-align:center;">Learning</div>
+        </div>
+      </div>
+
+      <h1 class="auth-title" id="authTitle">登入帳號</h1>
+      <p class="auth-desc" id="authDesc">繼續你的英語學習旅程</p>
+
+      <div class="error-msg" id="errMsg"></div>
+      <div class="success-msg" id="successMsg"></div>
+
+      <button class="btn btn-google" id="googleBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        使用 Google 登入
+      </button>
+
+      <div class="divider">或</div>
+
+      <div class="field">
+        <label class="field-label">電郵地址</label>
+        <input type="email" class="field-input" id="loginEmail" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label class="field-label">密碼</label>
+        <input type="password" class="field-input" id="loginPassword" placeholder="輸入密碼" autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary" id="loginBtn">登入</button>
+
+      <div class="auth-footer">
+        還沒有帳號？<a id="toSignup">立即註冊</a>
+      </div>
+
+      <div class="security-badge">
+        🔒 Firebase 加密保護
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- SIGNUP SCREEN -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="screen" id="screen-signup">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <svg class="auth-logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <use href="#bsLogoDef"/>
+          <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#loginBg)"/>
+          <ellipse cx="32" cy="32" rx="26" ry="10" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+          <text x="32" y="44" font-family="Nunito,sans-serif" font-size="34" font-weight="900" fill="url(#loginB)" text-anchor="middle">B</text>
+          <circle cx="56" cy="32" r="3" fill="#3b82f6"/>
+        </svg>
+        <div>
+          <div class="auth-name">BlackBook</div>
+          <div class="auth-sub" style="text-align:center;">Learning</div>
+        </div>
+      </div>
+
+      <h1 class="auth-title">建立帳號</h1>
+      <p class="auth-desc">免費開始你的學習旅程</p>
+
+      <div class="error-msg" id="signupErr"></div>
+
+      <button class="btn btn-google" id="googleSignupBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        使用 Google 註冊
+      </button>
+
+      <div class="divider">或</div>
+
+      <div class="field">
+        <label class="field-label">電郵地址</label>
+        <input type="email" class="field-input" id="signupEmail" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label class="field-label">密碼（最少 6 個字元）</label>
+        <input type="password" class="field-input" id="signupPassword" placeholder="設定密碼" autocomplete="new-password">
+      </div>
+      <div class="field">
+        <label class="field-label">確認密碼</label>
+        <input type="password" class="field-input" id="signupPassword2" placeholder="再次輸入密碼" autocomplete="new-password">
+      </div>
+      <button class="btn btn-primary" id="signupBtn">建立帳號</button>
+
+      <div class="auth-footer">
+        已有帳號？<a id="toLogin">返回登入</a>
+      </div>
+
+      <div class="security-badge">🔒 Firebase 加密保護</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- SETUP SCREEN (first-time after signup) -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="screen" id="screen-setup">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <svg class="auth-logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#loginBg)"/>
+          <ellipse cx="32" cy="32" rx="26" ry="10" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+          <text x="32" y="44" font-family="Nunito,sans-serif" font-size="34" font-weight="900" fill="url(#loginB)" text-anchor="middle">B</text>
+        </svg>
+      </div>
+
+      <h1 class="auth-title">建立你的角色</h1>
+      <p class="auth-desc">設定勇士名與頭像，開始學習旅程</p>
+
+      <div class="error-msg" id="setupErr"></div>
+
+      <div class="avatar-current">
+        <div class="avatar-preview" id="avatarPreview">🧙</div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">選擇頭像 Emoji</label>
+        <div class="avatar-grid" id="avatarGrid">
+          <button class="avatar-opt selected" data-emoji="🧙">🧙</button>
+          <button class="avatar-opt" data-emoji="🦸">🦸</button>
+          <button class="avatar-opt" data-emoji="🧝">🧝</button>
+          <button class="avatar-opt" data-emoji="🧚">🧚</button>
+          <button class="avatar-opt" data-emoji="🥷">🥷</button>
+          <button class="avatar-opt" data-emoji="🧑‍🚀">🧑‍🚀</button>
+          <button class="avatar-opt" data-emoji="🧑‍🎓">🧑‍🎓</button>
+          <button class="avatar-opt" data-emoji="👨‍🔬">👨‍🔬</button>
+          <button class="avatar-opt" data-emoji="👩‍💻">👩‍💻</button>
+          <button class="avatar-opt" data-emoji="🐱">🐱</button>
+          <button class="avatar-opt" data-emoji="🐶">🐶</button>
+          <button class="avatar-opt" data-emoji="🦊">🦊</button>
+          <button class="avatar-opt" data-emoji="🐯">🐯</button>
+          <button class="avatar-opt" data-emoji="🦁">🦁</button>
+          <button class="avatar-opt" data-emoji="🐼">🐼</button>
+          <button class="avatar-opt" data-emoji="🐨">🐨</button>
+          <button class="avatar-opt" data-emoji="🐸">🐸</button>
+          <button class="avatar-opt" data-emoji="🦉">🦉</button>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" style="display:none;">
+      </div>
+
+      <div class="field">
+        <label class="field-label">勇士名稱</label>
+        <input type="text" class="field-input" id="charNameInput" placeholder="例：勇者 Alex" maxlength="20">
+      </div>
+
+      <button class="btn btn-primary" id="finishSetupBtn">開始學習 →</button>
+
+      <div class="security-badge">🔒 你的資料安全儲存</div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module" src="firebase-config.js"></script>
+<script>
+// ============================================================
+// LOGIN / SIGNUP / SETUP LOGIC
+// ============================================================
+let bb; // Firebase shortcut
+let pendingUser = null; // 暫存註冊中或剛登入未設定的用戶
+let selectedEmoji = '🧙';
+let uploadedAvatarFile = null;
+let uploadedAvatarPreview = null;
+
+// 等待 Firebase 載入
+window.addEventListener('firebaseReady', () => {
+  bb = window.bbAuth;
+  initAuth();
+});
+if (window.bbAuth) { bb = window.bbAuth; initAuth(); }
+
+function initAuth(){
+  // 檢查 URL 是否要預設顯示註冊頁
+  const params = new URLSearchParams(location.search);
+  if (params.get('mode') === 'signup') showScreen('signup');
+
+  // 已登入用戶會自動跳到 app.html（除非還沒設定 profile）
+  bb.onAuthStateChanged(bb.auth, async (user) => {
+    if (!user) return;
+    // 檢查是否已有 profile 設定
+    try {
+      const userDoc = await bb.getDoc(bb.doc(bb.db, 'users', user.uid));
+      if (userDoc.exists() && userDoc.data().profile?.charName) {
+        // 已完成設定，直接進 app
+        location.href = 'app.html';
+      } else {
+        // 第一次登入，要求設定
+        pendingUser = user;
+        showScreen('setup');
+      }
+    } catch(e){
+      console.error('Profile check error:', e);
+    }
+  });
+
+  // ── Event listeners ────────────────────────
+  document.getElementById('toSignup').onclick = () => showScreen('signup');
+  document.getElementById('toLogin').onclick = () => showScreen('login');
+  document.getElementById('loginBtn').onclick = handleLogin;
+  document.getElementById('signupBtn').onclick = handleSignup;
+  document.getElementById('googleBtn').onclick = handleGoogle;
+  document.getElementById('googleSignupBtn').onclick = handleGoogle;
+  document.getElementById('finishSetupBtn').onclick = handleFinishSetup;
+
+  // Setup 頁面互動
+  document.querySelectorAll('.avatar-opt').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.avatar-opt').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedEmoji = btn.dataset.emoji;
+      uploadedAvatarFile = null;
+      uploadedAvatarPreview = null;
+      document.getElementById('avatarPreview').innerHTML = selectedEmoji;
+    };
+  });
+  // 上傳功能已移除（需 Firebase Storage 付費版）
+
+  // Enter 提交
+  document.getElementById('loginPassword').onkeydown = e => { if(e.key==='Enter') handleLogin(); };
+  document.getElementById('signupPassword2').onkeydown = e => { if(e.key==='Enter') handleSignup(); };
+  document.getElementById('charNameInput').onkeydown = e => { if(e.key==='Enter') handleFinishSetup(); };
+}
+
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  clearMsgs();
+}
+function clearMsgs(){
+  document.querySelectorAll('.error-msg, .success-msg').forEach(m=>{ m.classList.remove('show'); m.textContent=''; });
+}
+function showErr(id, msg){
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function setBtnLoading(btn, loading){
+  if(loading){ btn.disabled = true; btn.dataset.text = btn.innerHTML; btn.innerHTML='<span class="loader"></span>'; }
+  else{ btn.disabled = false; btn.innerHTML = btn.dataset.text || btn.textContent; }
+}
+
+// ── 處理 Email 登入 ────────────────────────
+async function handleLogin(){
+  clearMsgs();
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if (!email || !password) { showErr('errMsg','請填寫電郵和密碼'); return; }
+  const btn = document.getElementById('loginBtn');
+  setBtnLoading(btn, true);
+  try {
+    await bb.signInWithEmailAndPassword(bb.auth, email, password);
+    // onAuthStateChanged 會自動處理跳轉
+  } catch(e) {
+    setBtnLoading(btn, false);
+    showErr('errMsg', mapAuthError(e.code));
+  }
+}
+
+// ── 處理 Email 註冊 ────────────────────────
+async function handleSignup(){
+  clearMsgs();
+  const email = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  const password2 = document.getElementById('signupPassword2').value;
+  if (!email || !password) { showErr('signupErr','請填寫所有欄位'); return; }
+  if (password.length < 6) { showErr('signupErr','密碼最少 6 個字元'); return; }
+  if (password !== password2) { showErr('signupErr','兩次密碼不一致'); return; }
+  const btn = document.getElementById('signupBtn');
+  setBtnLoading(btn, true);
+  try {
+    await bb.createUserWithEmailAndPassword(bb.auth, email, password);
+    // onAuthStateChanged 會自動把用戶帶到 setup
+  } catch(e) {
+    setBtnLoading(btn, false);
+    showErr('signupErr', mapAuthError(e.code));
+  }
+}
+
+// ── Google 登入 ────────────────────────────
+async function handleGoogle(){
+  clearMsgs();
+  try {
+    await bb.signInWithPopup(bb.auth, bb.googleProvider);
+  } catch(e) {
+    showErr('errMsg', mapAuthError(e.code));
+  }
+}
+
+// ── 完成首次設定 ────────────────────────────
+async function handleFinishSetup(){
+  clearMsgs();
+  if (!pendingUser) { location.href = 'index.html'; return; }
+  const charName = document.getElementById('charNameInput').value.trim();
+  if (!charName) { showErr('setupErr','請輸入勇士名稱'); return; }
+  if (charName.length < 2) { showErr('setupErr','名稱最少 2 個字元'); return; }
+
+  const btn = document.getElementById('finishSetupBtn');
+  setBtnLoading(btn, true);
+
+  try {
+    // 只儲存 emoji 頭像（Storage 需付費版才能上傳圖片）
+    await bb.setDoc(bb.doc(bb.db, 'users', pendingUser.uid), {
+      profile: {
+        charName,
+        avatarType: 'emoji',
+        avatarValue: selectedEmoji,
+        email: pendingUser.email,
+        createdAt: bb.serverTimestamp()
+      },
+      progress: {
+        xp: 0,
+        level: 1,
+        streak: 0,
+        stats: {
+          詞彙力: 0, 文法力: 0, 聆聽力: 0,
+          閱讀力: 0, 拼字力: 0, 寫作力: 0
+        },
+        lastActiveAt: bb.serverTimestamp()
+      },
+      tasks: {}
+    });
+
+    // 跳到主應用
+    location.href = 'app.html';
+  } catch(e) {
+    setBtnLoading(btn, false);
+    console.error(e);
+    showErr('setupErr', '設定失敗：' + (e.message || '請重試'));
+  }
+}
+
+// ── 錯誤訊息中文化 ────────────────────────────
+function mapAuthError(code){
+  const map = {
+    'auth/invalid-email':'電郵格式不正確',
+    'auth/user-not-found':'找不到此帳號，請先註冊',
+    'auth/wrong-password':'密碼錯誤',
+    'auth/invalid-credential':'帳號或密碼錯誤',
+    'auth/email-already-in-use':'此電郵已被註冊',
+    'auth/weak-password':'密碼太弱（至少 6 個字元）',
+    'auth/popup-closed-by-user':'已取消 Google 登入',
+    'auth/popup-blocked':'瀏覽器封鎖了彈出視窗，請允許後再試',
+    'auth/network-request-failed':'網路連線失敗',
+    'auth/too-many-requests':'嘗試次數過多，請稍後再試'
+  };
+  return map[code] || ('登入失敗：' + code);
+}
+</script>
+
+</body>
+</html>

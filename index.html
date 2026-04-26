@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlackBook · 用 AI 學好英文，從這裡開始</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a14; --bg-2:#11111d; --surface:#181828; --surface-2:#22223a;
+  --border:rgba(255,255,255,.08); --text:#f0f0ff; --text-muted:#9090b0; --text-faint:#5a5a7a;
+  --primary:#3b82f6; --primary-hover:#2563eb; --primary-glow:rgba(59,130,246,.4);
+  --accent:#8b5cf6; --gold:#fbbf24;
+  --success:#22c55e; --danger:#ef4444;
+  --space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;--space-5:1.25rem;
+  --space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;--space-12:3rem;--space-16:4rem;
+  --radius-md:.5rem;--radius-lg:.75rem;--radius-xl:1rem;--radius-2xl:1.5rem;--radius-full:9999px;
+  --transition:200ms cubic-bezier(0.16,1,0.3,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:none;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;}
+button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;}
+a{color:inherit;text-decoration:none;}
+
+/* ── Stars background ── */
+.stars{position:fixed;inset:0;background:
+  radial-gradient(2px 2px at 20% 30%,#fff,transparent),
+  radial-gradient(1px 1px at 60% 70%,#fff,transparent),
+  radial-gradient(2px 2px at 80% 10%,#fff,transparent),
+  radial-gradient(1px 1px at 30% 80%,#fff,transparent),
+  radial-gradient(2px 2px at 70% 50%,#fff,transparent),
+  radial-gradient(1px 1px at 10% 60%,#fff,transparent),
+  radial-gradient(1px 1px at 50% 20%,#fff,transparent);
+  background-size:300px 300px;opacity:.3;z-index:0;pointer-events:none;animation:stars 60s linear infinite;}
+@keyframes stars{from{background-position:0 0;}to{background-position:300px 300px;}}
+
+/* ── Glow orbs ── */
+.orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.4;pointer-events:none;z-index:0;}
+.orb-1{width:400px;height:400px;background:var(--primary);top:-100px;left:-100px;animation:float1 20s ease-in-out infinite;}
+.orb-2{width:300px;height:300px;background:var(--accent);bottom:-50px;right:-50px;animation:float2 25s ease-in-out infinite;}
+@keyframes float1{0%,100%{transform:translate(0,0);}50%{transform:translate(50px,80px);}}
+@keyframes float2{0%,100%{transform:translate(0,0);}50%{transform:translate(-60px,-40px);}}
+
+/* ── Navbar ── */
+.navbar{position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);background:rgba(10,10,20,.8);border-bottom:1px solid var(--border);}
+.nav-inner{max-width:1200px;margin:0 auto;padding:var(--space-4) var(--space-6);display:flex;align-items:center;justify-content:space-between;}
+.brand{display:flex;align-items:center;gap:var(--space-3);}
+.brand-logo{width:40px;height:40px;border-radius:var(--radius-lg);}
+.brand-name{font-weight:900;font-size:1.25rem;letter-spacing:.02em;}
+.brand-sub{font-size:.65rem;font-weight:700;color:var(--primary);letter-spacing:.2em;text-transform:uppercase;line-height:1;}
+.nav-links{display:flex;gap:var(--space-6);align-items:center;}
+.nav-link{color:var(--text-muted);font-size:.9rem;font-weight:600;transition:color var(--transition);}
+.nav-link:hover{color:var(--text);}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);padding:var(--space-3) var(--space-6);border-radius:var(--radius-full);font-weight:800;font-size:.9rem;transition:all var(--transition);white-space:nowrap;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-hover);box-shadow:0 6px 24px var(--primary-glow);transform:translateY(-2px);}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border);}
+.btn-ghost:hover{background:var(--surface);border-color:var(--primary);}
+.btn-lg{padding:var(--space-4) var(--space-8);font-size:1rem;}
+
+/* ── Hero ── */
+.hero{position:relative;z-index:1;padding:var(--space-16) var(--space-6) var(--space-12);max-width:1200px;margin:0 auto;}
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-12);align-items:center;}
+.hero-tag{display:inline-flex;align-items:center;gap:var(--space-2);padding:6px 14px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);border-radius:var(--radius-full);font-size:.75rem;font-weight:800;color:var(--primary);letter-spacing:.05em;text-transform:uppercase;margin-bottom:var(--space-5);}
+.hero-title{font-size:clamp(2.5rem,5vw,4rem);font-weight:900;line-height:1.1;letter-spacing:-.02em;margin-bottom:var(--space-5);}
+.hero-title .accent{background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:1.1rem;color:var(--text-muted);margin-bottom:var(--space-8);max-width:480px;}
+.hero-cta{display:flex;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-8);}
+.hero-features{display:flex;flex-direction:column;gap:var(--space-3);}
+.hero-feat{display:flex;align-items:center;gap:var(--space-3);color:var(--text-muted);font-size:.9rem;}
+.hero-feat-dot{width:6px;height:6px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--primary);}
+
+/* Hero preview card */
+.hero-preview{background:linear-gradient(135deg,var(--surface),var(--surface-2));border-radius:var(--radius-2xl);padding:var(--space-6);border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.5);position:relative;overflow:hidden;}
+.preview-header{display:flex;align-items:center;gap:var(--space-2);padding-bottom:var(--space-4);border-bottom:1px solid var(--border);margin-bottom:var(--space-4);}
+.preview-dot{width:10px;height:10px;border-radius:50%;}
+.preview-dot.r{background:#ff5f56;}.preview-dot.y{background:#ffbd2e;}.preview-dot.g{background:#27c93f;}
+.preview-title{margin-left:auto;font-size:.75rem;color:var(--text-faint);font-weight:700;}
+.preview-card{background:var(--bg-2);border-radius:var(--radius-xl);padding:var(--space-5);margin-bottom:var(--space-3);border:1px solid var(--border);}
+.preview-rank{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-4);}
+.preview-rank-icon{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#ffd700,#ffa500);display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 0 20px rgba(255,215,0,.4);}
+.preview-rank-text{flex:1;}
+.preview-rank-name{font-weight:900;font-size:1rem;}
+.preview-rank-prog{font-size:.7rem;color:var(--text-muted);}
+.preview-xp{display:flex;justify-content:space-between;font-size:.75rem;font-weight:700;color:var(--text-muted);margin-bottom:6px;}
+.preview-xp-bar{height:8px;background:var(--surface);border-radius:var(--radius-full);overflow:hidden;}
+.preview-xp-fill{height:100%;width:65%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:var(--radius-full);box-shadow:0 0 8px var(--primary-glow);}
+.preview-stats{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2);}
+.preview-stat{background:var(--bg-2);border-radius:var(--radius-lg);padding:var(--space-3);border:1px solid var(--border);}
+.preview-stat-icon{font-size:1.2rem;margin-bottom:4px;}
+.preview-stat-name{font-size:.7rem;color:var(--text-muted);font-weight:700;}
+.preview-stat-val{font-size:1.1rem;font-weight:900;}
+
+/* ── Sections ── */
+.section{position:relative;z-index:1;padding:var(--space-16) var(--space-6);max-width:1200px;margin:0 auto;}
+.section-tag{display:inline-block;font-size:.75rem;font-weight:800;color:var(--primary);letter-spacing:.15em;text-transform:uppercase;margin-bottom:var(--space-3);}
+.section-title{font-size:clamp(1.75rem,3vw,2.5rem);font-weight:900;line-height:1.2;margin-bottom:var(--space-4);}
+.section-sub{color:var(--text-muted);font-size:1.05rem;max-width:600px;margin-bottom:var(--space-10);}
+
+/* Features grid */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5);}
+.feature-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-2xl);padding:var(--space-6);transition:all var(--transition);}
+.feature-card:hover{transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 32px rgba(59,130,246,.15);}
+.feature-icon{width:48px;height:48px;border-radius:var(--radius-lg);background:rgba(59,130,246,.15);display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:var(--space-4);}
+.feature-title{font-size:1.1rem;font-weight:800;margin-bottom:var(--space-2);}
+.feature-desc{font-size:.9rem;color:var(--text-muted);line-height:1.6;}
+
+/* Steps */
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-6);}
+.step{position:relative;}
+.step-num{font-size:3rem;font-weight:900;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:var(--space-3);}
+.step-title{font-size:1.2rem;font-weight:800;margin-bottom:var(--space-2);}
+.step-desc{color:var(--text-muted);font-size:.9rem;line-height:1.6;}
+
+/* Ranks showcase */
+.ranks-row{display:flex;gap:var(--space-3);overflow-x:auto;padding-bottom:var(--space-4);scrollbar-width:none;}
+.ranks-row::-webkit-scrollbar{display:none;}
+.rank-chip{flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--space-4) var(--space-5);text-align:center;min-width:120px;transition:all var(--transition);}
+.rank-chip:hover{transform:translateY(-3px);}
+.rank-chip-emoji{font-size:2rem;margin-bottom:var(--space-2);}
+.rank-chip-name{font-weight:800;font-size:.9rem;margin-bottom:2px;}
+.rank-chip-lv{font-size:.7rem;color:var(--text-faint);font-weight:700;}
+
+/* CTA section */
+.cta-banner{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.15));border:1px solid rgba(59,130,246,.3);border-radius:var(--radius-2xl);padding:var(--space-12) var(--space-8);text-align:center;}
+.cta-banner h2{font-size:clamp(1.75rem,3vw,2.5rem);font-weight:900;margin-bottom:var(--space-4);}
+.cta-banner p{color:var(--text-muted);font-size:1.05rem;margin-bottom:var(--space-6);max-width:500px;margin-left:auto;margin-right:auto;}
+
+/* Footer */
+.footer{background:var(--bg-2);border-top:1px solid var(--border);padding:var(--space-8) var(--space-6);position:relative;z-index:1;}
+.footer-inner{max-width:1200px;margin:0 auto;text-align:center;color:var(--text-muted);font-size:.85rem;}
+
+/* Mobile */
+@media (max-width:768px){
+  .hero-inner{grid-template-columns:1fr;gap:var(--space-8);}
+  .features-grid,.steps-grid{grid-template-columns:1fr;}
+  .nav-links{gap:var(--space-3);}
+  .nav-link.hide-mobile{display:none;}
+  .hero{padding:var(--space-10) var(--space-4) var(--space-8);}
+  .section{padding:var(--space-12) var(--space-4);}
+}
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <div class="brand">
+      <svg class="brand-logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="bsBg" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#1a1a2e"/><stop offset="100%" stop-color="#000"/></radialGradient>
+          <linearGradient id="bsB" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#e0e8ff"/></linearGradient>
+        </defs>
+        <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#bsBg)"/>
+        <ellipse cx="32" cy="32" rx="26" ry="10" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+        <circle cx="32" cy="32" r="22" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+        <text x="32" y="44" font-family="Nunito,sans-serif" font-size="34" font-weight="900" fill="url(#bsB)" text-anchor="middle">B</text>
+        <circle cx="56" cy="32" r="3" fill="#3b82f6"/>
+        <circle cx="38" cy="44" r="2.5" fill="#3b82f6"/>
+        <circle cx="8" cy="32" r="1.5" fill="rgba(255,255,255,0.4)"/>
+      </svg>
+      <div>
+        <div class="brand-name">BlackBook</div>
+        <div class="brand-sub">Learning</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="#features" class="nav-link hide-mobile">功能特色</a>
+      <a href="#steps" class="nav-link hide-mobile">如何使用</a>
+      <a href="login.html" class="btn btn-ghost">登入</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag">✨ AI 智能英語學習</div>
+      <h1 class="hero-title">用 AI 學好英文，<br><span class="accent">從這裡開始</span></h1>
+      <p class="hero-sub">BlackBook 用 AI 為你即時生成題目，從單字、文法、聆聽、拼字到閱讀寫作，每天不重複，越練越強。</p>
+      <div class="hero-cta">
+        <a href="login.html?mode=signup" class="btn btn-primary btn-lg">免費開始使用</a>
+        <a href="login.html" class="btn btn-ghost btn-lg">已有帳號？登入</a>
+      </div>
+      <div class="hero-features">
+        <div class="hero-feat"><div class="hero-feat-dot"></div>AI 即時出題，永不重複</div>
+        <div class="hero-feat"><div class="hero-feat-dot"></div>段位制升級，由青銅到菁英</div>
+        <div class="hero-feat"><div class="hero-feat-dot"></div>跨裝置雲端同步進度</div>
+        <div class="hero-feat"><div class="hero-feat-dot"></div>Firebase 加密保護資料</div>
+      </div>
+    </div>
+    <div class="hero-preview">
+      <div class="preview-header">
+        <div class="preview-dot r"></div>
+        <div class="preview-dot y"></div>
+        <div class="preview-dot g"></div>
+        <div class="preview-title">BlackBook · Dashboard</div>
+      </div>
+      <div class="preview-card">
+        <div class="preview-rank">
+          <div class="preview-rank-icon">🥇</div>
+          <div class="preview-rank-text">
+            <div class="preview-rank-name">黃金 段位</div>
+            <div class="preview-rank-prog">本段內 3/5 級 · Lv.13</div>
+          </div>
+        </div>
+        <div class="preview-xp">
+          <span>1,920 / 3,000 XP</span>
+          <span>+340 今日</span>
+        </div>
+        <div class="preview-xp-bar"><div class="preview-xp-fill"></div></div>
+      </div>
+      <div class="preview-stats">
+        <div class="preview-stat"><div class="preview-stat-icon">📝</div><div class="preview-stat-name">詞彙力</div><div class="preview-stat-val">68</div></div>
+        <div class="preview-stat"><div class="preview-stat-icon">✏️</div><div class="preview-stat-name">文法力</div><div class="preview-stat-val">52</div></div>
+        <div class="preview-stat"><div class="preview-stat-icon">🎧</div><div class="preview-stat-name">聆聽力</div><div class="preview-stat-val">47</div></div>
+        <div class="preview-stat"><div class="preview-stat-icon">📖</div><div class="preview-stat-name">閱讀力</div><div class="preview-stat-val">41</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section class="section" id="features">
+  <div class="section-tag">✦ 功能特色</div>
+  <h2 class="section-title">不只是練習，是真正<br>讓你變強的學習方式</h2>
+  <p class="section-sub">六大模組覆蓋英語學習所有面向，每個練習都有 AI 為你量身設計</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">📝</div>
+      <h3 class="feature-title">單字填字</h3>
+      <p class="feature-desc">看中文意思，把英文單字填入句子空格，搭配音標與例句記得更牢。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">✏️</div>
+      <h3 class="feature-title">文法練習</h3>
+      <p class="feature-desc">針對你的段位出題，從基礎時態到假設語氣，每題附詳細中文解析。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎧</div>
+      <h3 class="feature-title">聆聽辨識</h3>
+      <p class="feature-desc">AI 真人發音播放單字，從相似拼寫中選出正確答案，訓練聽辨能力。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔤</div>
+      <h3 class="feature-title">拼字挑戰</h3>
+      <p class="feature-desc">聽單字寫出完整拼寫，每個字都是常見易錯字，提示功能助你逐步攻略。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📖</div>
+      <h3 class="feature-title">AI 閱讀</h3>
+      <p class="feature-desc">每次都是新文章，由 AI 即時撰寫並出 3 題理解問題，內容豐富永不重複。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">✍️</div>
+      <h3 class="feature-title">AI 寫作批改</h3>
+      <p class="feature-desc">寫一段英文，AI 給你打分、指出優缺點、改寫示範，比真人老師還細心。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── RANKS ── -->
+<section class="section">
+  <div class="section-tag">🏆 段位制度</div>
+  <h2 class="section-title">從 青銅 到 菁英，<br>看見自己的成長</h2>
+  <p class="section-sub">7 個段位 × 每段 5 級 = 35 級進階之旅，題目難度依你的段位自動調整</p>
+  <div class="ranks-row">
+    <div class="rank-chip"><div class="rank-chip-emoji">🥉</div><div class="rank-chip-name">青銅</div><div class="rank-chip-lv">Lv.1-5</div></div>
+    <div class="rank-chip"><div class="rank-chip-emoji">🥈</div><div class="rank-chip-name">白銀</div><div class="rank-chip-lv">Lv.6-10</div></div>
+    <div class="rank-chip"><div class="rank-chip-emoji">🥇</div><div class="rank-chip-name">黃金</div><div class="rank-chip-lv">Lv.11-15</div></div>
+    <div class="rank-chip"><div class="rank-chip-emoji">💠</div><div class="rank-chip-name">白金</div><div class="rank-chip-lv">Lv.16-20</div></div>
+    <div class="rank-chip"><div class="rank-chip-emoji">💎</div><div class="rank-chip-name">鑽石</div><div class="rank-chip-lv">Lv.21-25</div></div>
+    <div class="rank-chip"><div class="rank-chip-emoji">👑</div><div class="rank-chip-name">大師</div><div class="rank-chip-lv">Lv.26-30</div></div>
+    <div class="rank-chip"><div class="rank-chip-emoji">🔥</div><div class="rank-chip-name">菁英</div><div class="rank-chip-lv">Lv.31+</div></div>
+  </div>
+</section>
+
+<!-- ── STEPS ── -->
+<section class="section" id="steps">
+  <div class="section-tag">🚀 三步上手</div>
+  <h2 class="section-title">註冊到開始學習，<br>三分鐘搞定</h2>
+  <p class="section-sub">不用任何下載，打開瀏覽器就能用</p>
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-title">建立帳號</div>
+      <div class="step-desc">用 Email 或 Google 一鍵註冊，設定你的勇士名與頭像，整個過程不超過一分鐘。</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-title">每天練習</div>
+      <div class="step-desc">選任何模組開始 10 題練習，AI 會依你的段位即時出題，每天內容不重複。</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-title">看見成長</div>
+      <div class="step-desc">獲得 XP、提升段位、追蹤六大屬性成長，跨裝置同步進度，隨時繼續學習。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="section">
+  <div class="cta-banner">
+    <h2>準備好開始你的英語旅程了嗎？</h2>
+    <p>加入 BlackBook，讓 AI 陪你每天進步一點點</p>
+    <a href="login.html?mode=signup" class="btn btn-primary btn-lg">免費開始使用</a>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <p>BlackBook · AI 英語學習平台 · © 2026 BlackSpace</p>
+  </div>
+</footer>
+
+</body>
+</html>
