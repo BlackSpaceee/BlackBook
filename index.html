@@ -1223,7 +1223,7 @@ window.dispatchEvent(new Event('firebaseReady'));
     <div class="screen" id="screen-char">
       <div style="display:flex;align-items:center;gap:var(--space-3);">
         <button class="btn btn-ghost" style="padding:var(--space-2) var(--space-3);" onclick="navigate('home')">← 返回</button>
-        <div class="section-title" style="flex:1;margin:0;">🧙 角色</div>
+        <div class="section-title"><span id="charTitleIcon">🧙</span> 角色</div>
       </div>
       <div class="char-hero">
         <div class="char-avatar" id="charAvatarBig">😂</div>
@@ -2269,7 +2269,7 @@ function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name)?.classList.add('active');
   // landing/login 強制 dark theme（因為其 CSS 是 dark 寫死的）
-  if (name !== 'app') document.documentElement.setAttribute('data-theme','dark');
+  if (name !== 'app') document.documentElement.setAttribute('data-theme', localStorage.getItem('bb-theme') || 'dark');
   // 鎖定 body 滑動：只有 app 模式鎖
   if (name === 'app') document.body.classList.add('app-mode');
   else document.body.classList.remove('app-mode');
@@ -2513,7 +2513,7 @@ function renderAvatar(elId, big=false){
 // 同步首頁 mascot 與 nav 角色 icon 的 emoji
 function syncAllAvatars(){
   const emoji = state.charEmoji || '😂';
-  const ids = ['charAvatarTop','charAvatarBig','homeMascot','navCharIcon'];
+  const ids = ['charAvatarTop','charAvatarBig','homeMascot','navCharIcon','charTitleIcon'];
   ids.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.textContent = emoji;
